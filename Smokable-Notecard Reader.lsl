@@ -16,8 +16,6 @@
 
 // Public Domain.  Feel free to delete header comments.
 
- //TESTING TESTING
-
 // This script reads all configuration notecards that match a given suffix,
 
 // storing the settings in global variables.  It rereads the notecards
@@ -118,7 +116,7 @@ config_init()
 
     // rather than retaining the previous value.
 
-    ToolType = [];          // %%%
+    ToolType = [];          // %%% 
 
     RegistryNumbers  = 000000000;        // %%%
 
@@ -187,6 +185,7 @@ config_dump()
 //   bar=1.5
 
 // MY EXAMPLE (foo=LateStart BongTray C1=120343221)
+// bar=???
 
  
 
@@ -216,6 +215,11 @@ config_parse(string str, string cardName, integer lineNum)
 
     string arg2 = llList2String(ldata,2);
 
+    //ADD ADDITIONAL LINES FOR TOOLCHANNEL FROM LISTENERS
+    //STARTING WITH:
+
+    string arg3 = llList2String(1data,3)//LINE 3 OF NOTECARD
+
     // %%% Add more lines such as the above as needed for more arguments.
 
  
@@ -226,13 +230,23 @@ config_parse(string str, string cardName, integer lineNum)
 
         // another Foo configured: remember it
 
-        Foos    += [arg1];
+        ToolType    += [arg1];
 
-        FooVals += [(integer) arg2];
+        ToolChannel += [(integer) arg2];
 
+    } 
+
+    else if (cmb == "foo2") {
+
+        //ADD ADDITIONAL LINES FOR TOOLCHANNEL FROM LISTENERS
+        //STARTING WITH:
+
+        ToolChannel += [(integer) arg3];
+    }
+    
     } else if (cmd == "bar") {
 
-        Bar = (float) arg1;
+        RegistryNumbers = (float) arg1;
 
     }
 
@@ -591,6 +605,8 @@ state s_active
  
 
     // %%% Your code goes here!
+
+    //SET CHANNEL LISTENERS FROM NOTECARD TOOLSERIAL
 
  
 
