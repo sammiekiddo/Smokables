@@ -184,7 +184,7 @@ config_dump()
 
 //   bar=1.5
 
-// MY EXAMPLE (foo=LateStart BongTray C1=120343221)
+// MY EXAMPLE (foo2=LateStart BongTray C1=120343221)
 // bar=???
 
  
