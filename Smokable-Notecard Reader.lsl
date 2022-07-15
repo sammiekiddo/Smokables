@@ -16,7 +16,7 @@
 
 // Public Domain.  Feel free to delete header comments.
 
- 
+ //TESTING TESTING
 
 // This script reads all configuration notecards that match a given suffix,
 
