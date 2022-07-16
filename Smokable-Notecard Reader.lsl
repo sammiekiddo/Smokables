@@ -215,18 +215,16 @@ config_parse(string str, string cardName, integer lineNum)
 
     string arg2 = llList2String(ldata,2);
 
+    // %%% Add more lines such as the above as needed for more arguments.
     //ADD ADDITIONAL LINES FOR TOOLCHANNEL FROM LISTENERS
     //STARTING WITH:
 
-    string arg3 = llList2String(1data,3)//LINE 3 OF NOTECARD
-
-    // %%% Add more lines such as the above as needed for more arguments.
-
- 
+    //string arg3 = llList2String(1data,3)//LINE 3 OF NOTECARD
+    //weed=WEED1_CHANNEL=-18065431=SOMETHING ELSE (also and new varible EX.ToolMessage)
 
     // %%% Process example commands -- replace this code with meaningful stuff! %%%
 
-    if (cmd == "foo") {
+    if (cmd == "weed") {
 
         // another Foo configured: remember it
 
@@ -235,13 +233,23 @@ config_parse(string str, string cardName, integer lineNum)
         ToolChannel += [(integer) arg2];
 
     } 
+            //ADD ADDITIONAL LINES FOR TOOLCHANNEL FROM LISTENERS
+        //STARTING WITH:
 
-    else if (cmb == "foo2") {
+    else if (cmb == "rollup") {
 
         //ADD ADDITIONAL LINES FOR TOOLCHANNEL FROM LISTENERS
         //STARTING WITH:
 
-        ToolChannel += [(integer) arg3];
+        ToolType    += [arg1]
+
+        ToolChannel += [(integer) arg2];
+    }
+
+    else if (cmb == "foo") {
+        ToolType    += [arg1]
+
+        ToolChannel += [(integer) arg2];
     }
     
     } else if (cmd == "bar") {
@@ -607,6 +615,10 @@ state s_active
     // %%% Your code goes here!
 
     //SET CHANNEL LISTENERS FROM NOTECARD TOOLSERIAL
+    
+    touch(integer test){
+        config_dump();
+        }
 
  
 
