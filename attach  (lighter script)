@@ -1,0 +1,58 @@
+float detachTime = 110;
+key owner;
+key avatarKey;
+
+default
+{
+
+   on_rez(integer lighter)
+    {
+        avatarKey = llDetectedKey(0);
+        owner = llGetOwner();
+
+        if (owner == avatarKey){
+            llRequestPermissions( llGetOwner(), PERMISSION_ATTACH);
+        }
+        llSetTimerEvent(1.0);
+
+    }
+    
+    
+     run_time_permissions(integer perms) 
+    {
+        
+        if(perms & PERMISSION_ATTACH) 
+        {
+            llAttachToAvatar(ATTACH_RHAND);
+            llMessageLinked(LINK_SET,1,"isAttached",llDetectedKey(1));
+        
+            llSleep(detachTime);
+            llDetachFromAvatar();
+        }
+    }
+
+    touch_start (integer detectUser){
+
+        avatarKey = llDetectedKey(0);
+        owner = llGetOwner();
+
+        if(avatarKey == owner){ 
+        llSetTimerEvent(0.1);
+        llRequestPermissions(owner, PERMISSION_ATTACH );
+        }
+
+        if (avatarKey != owner){
+            llSetTimerEvent(0.1);
+            llRequestPermissions(avatarKey, PERMISSION_ATTACH );
+            }
+        }
+
+    timer(){
+        llSay(0,"Lighter has rezzed, find and touch to attach");
+        llSetTimerEvent(0);
+
+    }
+
+}
+
+
