@@ -1,0 +1,248 @@
+//integer TRAY_CHANNEL = -53065462;
+integer ROLLEDUP1_CHANNEL = -43045462;
+integer WEED1_CHANNEL = -18065431;
+
+integer CHECK4ERROR_CHANNEL = -16547321;
+integer WAITING_CHANNEL = - 000001011;
+integer START_CHANNEL = - 000001011;
+integer _holding = FALSE;
+integer _used = FALSE;
+
+key avatarKey;
+key owner;
+
+
+integer groupSession = FALSE;
+
+//COLOR CHANGER
+vector NAVY    = <0,     0.122, 0.247>;
+vector BLUE    = <0,     0.455, 0.851>;
+vector AQUA    = <0.498, 0.859, 1    >;
+vector TEAL    = <0.224, 0.8,   0.8  >;
+vector OLIVE   = <0.239, 0.6,   0.439>;
+vector GREEN   = <0.18,  0.8,   0.251>;
+vector LIME    = <0.004, 1    , 0.439>;
+vector YELLOW  = <1    , 0.863, 0    >;
+vector ORANGE  = <1    , 0.522, 0.106>;
+vector RED     = <1    , 0.255, 0.212>;
+vector MAROON  = <0.522, 0.078, 0.294>;
+vector FUCHSIA = <0.941, 0.071, 0.745>;
+vector PURPLE  = <0.694, 0.051, 0.788>;
+vector WHITE   = <1    , 1    , 1    >;
+vector SILVER  = <0.867, 0.867, 0.867>;
+vector GRAY    = <0.667, 0.667, 0.667>;
+vector BLACK   = <0.000, 0.000, 0.000>;
+ 
+string  hoverText   = "TEXT GOES HERE";//NAME OF MARIJUANA
+vector  hoverColor  = GRAY;//  set predefined color or any RGB color vector in float form
+vector  hoverColor2  = PURPLE;//
+float   hoverAlpha  = 1.0; // Sets the text's transparency, 1.0 being opaque, while 0.0 would be transparent
+
+rollupOwner()
+{
+    key smokerKey = llDetectedKey(0);
+   //owner = llGetOwner();
+    string msg = "UseSomeHerb" + (string) smokerKey;
+    //llRegionSayTo(avatarKey,WEED1_CHANNEL, msg);
+     llRegionSayTo(smokerKey,WEED1_CHANNEL, msg);
+     _used = TRUE;
+    }
+    
+rollup()
+{
+    key smokerKey = llDetectedKey(0);
+    string msg = "UseSomeHerb" + (string) smokerKey;
+    //llRegionSayTo(avatarKey,WEED1_CHANNEL, msg);
+     llRegionSayTo(smokerKey,WEED1_CHANNEL, msg);
+     _used = TRUE;
+    }    
+    
+remove() {
+    // key avatarKey = llDetectedKey(0);
+   // string msg = "potIsFilled, " + (string) avatarKey;
+   // integer a = (integer)llFrand(43);
+
+    //Remove baggie
+    //llMessageLinked(LINK_SET,1,"remove",llDetectedKey(1)); 
+  //  llSetStatus(STATUS_PHYSICS, FALSE);
+   // llSetAlpha(0.0, ALL_SIDES);
+    llDie();
+    llDetachFromAvatar();
+    }
+    
+check(){
+    key smokerKey = llDetectedKey(0);
+    string msg = "checking4Errors" + (string) smokerKey;
+    llRegionSayTo(smokerKey,CHECK4ERROR_CHANNEL, msg);
+    }
+    
+checkOwner(){
+    key smokerKey = llDetectedKey(0);
+    string msg = "checking4Errors" + (string) smokerKey;
+    llRegionSayTo(smokerKey,CHECK4ERROR_CHANNEL, msg);
+    }    
+    
+_isHere(){
+     key smokerKey = llDetectedKey(0);
+    string er = "UseSomeHerb" + (string) smokerKey;
+    llOwnerSay("REMOVE EXTRA GRAMS BEFORE ROLLING OR PACKING MARIJUANA. If you do not TAKE, script will delete extra rezzed grams on touch");
+    llRegionSayTo(smokerKey,WAITING_CHANNEL, er);
+    } 
+    
+_isHereOwner(){
+     key smokerKey = llDetectedKey(0);
+    string er = "UseSomeHerb" + (string) smokerKey;
+    llOwnerSay("REMOVE EXTRA GRAMS BEFORE ROLLING OR PACKING MARIJUANA. If you do not TAKE, script will delete extra rezzed grams on touch");
+    llRegionSayTo(smokerKey,WAITING_CHANNEL, er);
+    }       
+
+remove_listen_handleA()
+    {
+    llListenRemove(listenHandle_a);
+    }
+    
+remove_listen_handleB()
+    {
+    llListenRemove(listenHandle_b);
+    }
+    
+remove_listen_handleC()
+    {
+    llListenRemove(listenHandle_c);
+    }  
+    
+remove_listen_handleD()
+    {
+    llListenRemove(listenHandle_d);
+    }         
+
+integer listenHandle_a;
+integer listenHandle_b;
+integer listenHandle_c;
+integer listenHandle_d;
+
+default
+{
+    state_entry()
+    {
+    owner = llGetOwner();
+    //avatarKey = llDetectedKey(0);
+    //NAME OF WEED TYPE
+    //llSetText("Soil: " + "24/" + (string)bagWeight,hoverColor,hoverAlpha);
+    listenHandle_a = llListen( ROLLEDUP1_CHANNEL, "", "", "" );
+    listenHandle_b = llListen( CHECK4ERROR_CHANNEL, "", "", "" ); 
+    listenHandle_c = llListen( WAITING_CHANNEL, "", "", "" );  
+    listenHandle_d = llListen( START_CHANNEL, "", "", "" );  
+    llSetTimerEvent(3);
+    }
+    
+    
+     on_rez(integer smoking)
+    {
+        owner = llGetOwner();
+      //  avatarKey = llDetectedKey(0);
+     //   key smoker;
+     //   if(owner){
+     //   llSetTimerEvent(0.1);
+    //    llRequestPermissions( owner, PERMISSION_ATTACH );
+       // }
+         
+    }
+    
+    run_time_permissions( integer vGramPermissions )
+    {
+        if (owner == avatarKey && vGramPermissions & PERMISSION_ATTACH ){
+            _holding = TRUE;     
+            llAttachToAvatarTemp( ATTACH_RHAND );
+            _holding = TRUE;  
+        }else if (owner != avatarKey && vGramPermissions & PERMISSION_ATTACH ){     
+            llAttachToAvatarTemp( ATTACH_RHAND );
+            //_holding = TRUE;      
+        }else     
+            llSay(0, "Permission to attach denied" );
+            
+    } 
+    
+    
+   timer()
+    {
+     
+    if(_used == TRUE){
+        remove();
+        }
+        
+    
+    if(owner == avatarKey)
+    {
+       checkOwner();
+        }
+        
+     if(owner != avatarKey)
+    {
+       check();
+        }   
+    
+    }
+
+    touch(integer total_number)
+    {
+        avatarKey = llDetectedKey(0);
+        owner = llGetOwner();
+       // llSay(0, "touch_start event: key of avatar touching: " + (string) llDetectedKey(0) );
+        
+        if(avatarKey == owner && _holding == FALSE){ 
+        llSetTimerEvent(0.1);
+        llRequestPermissions(owner, PERMISSION_ATTACH );
+        }
+        
+        if(avatarKey == owner && _holding == TRUE) {
+        rollupOwner();
+        }
+        
+        //////////////////////GROUP SESSION////////////////////////
+        
+        if (groupSession == FALSE && avatarKey != owner){
+            llRequestPermissions( avatarKey, PERMISSION_ATTACH );
+            groupSession = TRUE;
+            //llSetTimerEvent(1);
+            }
+            
+        if(groupSession == TRUE && avatarKey != owner)
+        {
+        rollup();
+        } 
+    
+    }
+    
+     listen( integer vIntChn, string vStrNom, key vKeySrc, string vStrMsg)
+     { 
+     if(vIntChn == CHECK4ERROR_CHANNEL && owner == avatarKey){
+         _isHereOwner();
+         }
+         
+      if(vIntChn == CHECK4ERROR_CHANNEL && owner != avatarKey){
+         _isHere();
+        } 
+         
+      if(vIntChn == START_CHANNEL && owner != avatarKey){ //&& vKeySrc == llDetectedKey(0)){
+         rollup();
+         }
+         
+       if(vIntChn == START_CHANNEL && owner == avatarKey){ //&& vKeySrc == llDetectedKey(0)){
+         rollupOwner();
+         }  
+         
+      if(vIntChn == WAITING_CHANNEL){
+      // WAIT BEFORE CHECKING AGAIN 
+      llSetTimerEvent(1000);
+       }    
+     
+     if(vIntChn == ROLLEDUP1_CHANNEL){// && vKeySrc == llDetectedKey(0)){
+       //REMOVE HERB 
+       remove();
+       
+       }
+    } 
+}
+
+
