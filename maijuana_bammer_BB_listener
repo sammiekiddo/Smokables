@@ -1,8 +1,13 @@
+//Author Samantha Bene` Howze (sammiekiddo)
+//Copyright Samantha Bene` Howze (sammiekiddo)
+//All right of scripted code belong to Samantha Bene` Howze (sammiekiddo)
+
 
 
  /////////////////////NOTECARD READER SETUP///////////////////////////
 
 list    ToolType;       // %%% all foos configured (subject)
+list    PrepCheck;      
 
 list    DrugChannel1;    // %%% value for each foo configured (integer value)
 list    DrugChannel2;
@@ -17,7 +22,6 @@ list    PrepChannel4;
 list    ReadyChannel;
 
 float   RegistryNumbers;        // %%% a configurable parameter
-
 
 // %%% Static parameters for reading card config: you may change these, but don't have to.
 
@@ -56,7 +60,8 @@ config_init()
 {
 
 
-    ToolType = [];          // %%% 
+    ToolType = [];          // %%%
+    PrepCheck = [];          // %%% 
 
     RegistryNumbers  = 000000000;        // %%%
 
@@ -75,6 +80,7 @@ config_dump()
     // Replace this example code with your config %%%.
 
     say("ToolType: "       + llList2CSV(ToolType));      // %%%
+    say("PrepCheck: "      + llList2CSV(PrepCheck));
 
     say("DrugChannel 1: "    + llList2CSV(DrugChannel1));   // %%%
     say("DrugChannel 2: "    + llList2CSV(DrugChannel2));   // %%%
@@ -82,9 +88,9 @@ config_dump()
     say("DrugChannel 4: "    + llList2CSV(DrugChannel4));   // %%%
 
     say("PrepChannel 1: "    + llList2CSV(PrepChannel1));   // %%%
-    say("PrepChannel 2: "    + llList2CSV(PrepChannel1));   // %%%
-    say("PrepChannel 3: "    + llList2CSV(PrepChannel1));   // %%%
-    say("PrepChannel 1: "    + llList2CSV(PrepChannel1));   // %%%
+    say("PrepChannel 2: "    + llList2CSV(PrepChannel2));   // %%%
+    say("PrepChannel 3: "    + llList2CSV(PrepChannel3));   // %%%
+    say("PrepChannel 4: "    + llList2CSV(PrepChannel4));   // %%%
 
     say("ReadyChannel: "    + llList2CSV(ReadyChannel));   // %%%
 
@@ -124,7 +130,8 @@ config_parse(string str, string cardName, integer lineNum)
     //ADD ADDITIONAL LINES FOR TOOLCHANNEL FROM LISTENERS
     //STARTING WITH:
 
-    //string arg3 = llList2String(1data,3)//LINE 3 OF NOTECARD
+  //  string arg3 = llList2String(ldata,3);//LINE 3 OF NOTECARD
+   // string arg4 = llList2String(ldata,4);
     //weed=WEED1_CHANNEL=-18065431=SOMETHING ELSE (also and new varible EX.ToolMessage)
 
     // %%% Process example commands -- replace this code with meaningful stuff! %%%
@@ -137,6 +144,7 @@ config_parse(string str, string cardName, integer lineNum)
 
         ToolType    += [arg1];
         DrugChannel1 += [(integer) arg2];
+        channelCodes_weed1 += (integer)arg2;
 
     } else if (cmd == "weed2") {
 
@@ -155,31 +163,33 @@ config_parse(string str, string cardName, integer lineNum)
 
     } 
 //////////////////ROLLUP///////////////////////////
-    else if (cmb == "rollup") {
+    else if (cmd == "rollup") {
 
-        ToolType    += [arg1]
+        PrepCheck    += [arg1];
         PrepChannel1 += [(integer) arg2];
+        channelCodes_rollup1 += (integer)arg2;
+        
 
-    else if (cmb == "rollup2") {
-        ToolType    += [arg1]
+    }else if (cmd == "rollup2") {
+        PrepCheck    += [arg1];
         PrepChannel2 += [(integer) arg2];
     }
-    else if (cmb == "rollup3") {
-        ToolType    += [arg1]
+    else if (cmd == "rollup3") {
+        PrepCheck    += [arg1];
         PrepChannel3 += [(integer) arg2];
     }
-    else if (cmb == "rollup4") {
-        ToolType    += [arg1]
+    else if (cmd == "rollup4") {
+        PrepCheck    += [arg1];
         PrepChannel4 += [(integer) arg2];
     }
 
-    else if (cmb == "foo") {
-        ToolType    += [arg1]
+    else if (cmd == "foo") {
+        ToolType    += [arg1];
 
         ReadyChannel += [(integer) arg2];
     }
     
-    } else if (cmd == "bar") {
+     else if (cmd == "bar") {
 
         RegistryNumbers = (float) arg1;
 
@@ -288,12 +298,14 @@ integer WEED2_CHANNEL;                  //chronic
 integer WEED3_CHANNEL;                  //kush
 integer WEED4_CHANNEL;                  //magic
 
-integer ROLLEDUP1_CHANNEL;              //stress or bammer
+integer ROLLEDUP1_CHANNEL = 222222;              //stress or bammer
 integer ROLLEDUP2_CHANNEL;              //chronic
 integer ROLLEDUP3_CHANNEL;              //kush
 integer ROLLEDUP4_CHANNEL;              //magic
 
 integer START_CHANNEL;
+
+key avatarKey;
 
 remove()
     {
@@ -374,8 +386,9 @@ integer listenHandle_b;
 integer listenHandle_c;
 integer listenHandle_d;
 
+integer channelCodes_rollup1;
+integer channelCodes_weed1;
 integer channelCodes;
-
 
 /////////////////////////LISTENER SETUP END///////////////////////////////////////////
 
@@ -394,34 +407,11 @@ default
 
     state_entry() {
 
-        llSetText("", <1.0,1.0,1.0>, 1.0);
+        //llSetText("", <1.0,1.0,1.0>, 1.0);
 
         state s_config;
-
-    }
-
-}
-
-listen( integer vIntChn, string vStrNom, key vKeySrc, string vStrMsg )
-   {    
-        if(vIntChn == WEED1_CHANNEL){
-        packComplete_1();
         }
-        
-        if(vIntChn == WEED2_CHANNEL){
-        packComplete_2();
-        }
-        
-        if(vIntChn == WEED3_CHANNEL){
-        packComplete_3();
-        }
-        
-        if(vIntChn == WEED4_CHANNEL){
-        packComplete_4();
-        }
-    }
 
- 
 
 // This state is only used to get into s_config, because going from
 
@@ -430,9 +420,8 @@ listen( integer vIntChn, string vStrNom, key vKeySrc, string vStrMsg )
 // not want to redo anything we might have put in default state entry.
 
  
-
+}
 state s_reconfig
-
 {
 
     state_entry() {
@@ -653,11 +642,15 @@ state s_active
     state_entry()
     {
        //SET CHANNEL LISTENERS FROM NOTECARD TOOLSERIAL
-
-       START_CHANNEL = llGetListEntryType(ReadyChannel, channelCodes);
-
-        WEED1_CHANNEL = llGetListEntryType(DrugChannel1, channelCodes);
-        listenHandle_a = llListen( WEED1_CHANNEL, "", "", "" );
+         ROLLEDUP1_CHANNEL = channelCodes_rollup1;
+         
+         WEED1_CHANNEL = channelCodes_weed1;
+         listenHandle_a = llListen( WEED1_CHANNEL, "", "", "" );
+        
+        
+        
+        
+        START_CHANNEL = llGetListEntryType(ReadyChannel, channelCodes);
 
         WEED2_CHANNEL = llGetListEntryType(DrugChannel2, channelCodes);
         listenHandle_b = llListen( WEED2_CHANNEL, "", "", "" );
@@ -669,7 +662,7 @@ state s_active
         listenHandle_d = llListen( WEED4_CHANNEL, "", "", "" );
 
 
-        ROLLEDUP1_CHANNEL = llGetListEntryType(PrepChannel1, channelCodes);
+       
         ROLLEDUP2_CHANNEL = llGetListEntryType(PrepChannel2, channelCodes);
         ROLLEDUP3_CHANNEL = llGetListEntryType(PrepChannel3, channelCodes);
         ROLLEDUP4_CHANNEL = llGetListEntryType(PrepChannel4, channelCodes);
@@ -680,7 +673,31 @@ state s_active
 
     touch(integer test){
         config_dump();
+        avatarKey = llDetectedKey(0);
+         llOwnerSay("WEED1_CHANNEL: " +(string)WEED1_CHANNEL);
+         llOwnerSay("ROLLEDUP1_CHANNEL: " +(string)ROLLEDUP1_CHANNEL);
         }
+        
+        
+        listen( integer vIntChn, string vStrNom, key vKeySrc, string vStrMsg )
+   {    
+        if(vIntChn == WEED1_CHANNEL){
+        packComplete_1();
+        }
+        
+        if(vIntChn == WEED2_CHANNEL){
+        packComplete_2();
+        }
+        
+        if(vIntChn == WEED3_CHANNEL){
+        packComplete_3();
+        }
+        
+        if(vIntChn == WEED4_CHANNEL){
+        packComplete_4();
+        }
+    }
+ 
 
  
 
@@ -695,3 +712,4 @@ state s_active
     }
 
 }
+
