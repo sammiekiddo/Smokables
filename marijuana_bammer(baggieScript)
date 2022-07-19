@@ -140,13 +140,7 @@ default
      on_rez(integer smoking)
     {
         owner = llGetOwner();
-      //  avatarKey = llDetectedKey(0);
-     //   key smoker;
-     //   if(owner){
-     //   llSetTimerEvent(0.1);
-    //    llRequestPermissions( owner, PERMISSION_ATTACH );
-       // }
-         
+            
     }
     
     run_time_permissions( integer vGramPermissions )
@@ -157,7 +151,8 @@ default
             _holding = TRUE;  
         }else if (owner != avatarKey && vGramPermissions & PERMISSION_ATTACH ){     
             llAttachToAvatarTemp( ATTACH_RHAND );
-            //_holding = TRUE;      
+            groupSession = TRUE;
+        
         }else     
             llSay(0, "Permission to attach denied" );
             
@@ -188,8 +183,12 @@ default
     {
         avatarKey = llDetectedKey(0);
         owner = llGetOwner();
-       // llSay(0, "touch_start event: key of avatar touching: " + (string) llDetectedKey(0) );
+
+        ////////////////////DEBUG//////////////////////
+        //llSay(0, "touch_start event: key of avatar touching: " + (string) llDetectedKey(0) );
         
+        //////////////////////SOLO SESSION////////////////////////
+
         if(avatarKey == owner && _holding == FALSE){ 
         llSetTimerEvent(0.1);
         llRequestPermissions(owner, PERMISSION_ATTACH );
@@ -202,13 +201,11 @@ default
         //////////////////////GROUP SESSION////////////////////////
         
         if (groupSession == FALSE && avatarKey != owner){
-            llRequestPermissions( avatarKey, PERMISSION_ATTACH );
-            groupSession = TRUE;
-            //llSetTimerEvent(1);
+            llSetTimerEvent(0.1);
+            llRequestPermissions(owner, PERMISSION_ATTACH );
             }
             
-        if(groupSession == TRUE && avatarKey != owner)
-        {
+        if(avatarKey != owner && groupSession == TRUE){
         rollup();
         } 
     
