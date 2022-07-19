@@ -40,8 +40,8 @@ float   hoverAlpha  = 1.0; // Sets the text's transparency, 1.0 being opaque, wh
 
 rollupOwner()
 {
-    key smokerKey = llDetectedKey(0);
-   //owner = llGetOwner();
+    //key smokerKey = llDetectedKey(0);
+    key smokerKey = owner;
     string msg = "UseSomeHerb" + (string) smokerKey;
     //llRegionSayTo(avatarKey,WEED1_CHANNEL, msg);
      llRegionSayTo(smokerKey,WEED1_CHANNEL, msg);
@@ -50,7 +50,8 @@ rollupOwner()
     
 rollup()
 {
-    key smokerKey = llDetectedKey(0);
+    //key smokerKey = llDetectedKey(0);
+    key smokerKey = avatarKey;
     string msg = "UseSomeHerb" + (string) smokerKey;
     //llRegionSayTo(avatarKey,WEED1_CHANNEL, msg);
      llRegionSayTo(smokerKey,WEED1_CHANNEL, msg);
@@ -58,39 +59,36 @@ rollup()
     }    
     
 remove() {
-    // key avatarKey = llDetectedKey(0);
-   // string msg = "potIsFilled, " + (string) avatarKey;
-   // integer a = (integer)llFrand(43);
-
-    //Remove baggie
-    //llMessageLinked(LINK_SET,1,"remove",llDetectedKey(1)); 
-  //  llSetStatus(STATUS_PHYSICS, FALSE);
-   // llSetAlpha(0.0, ALL_SIDES);
     llDie();
     llDetachFromAvatar();
     }
     
 check(){
-    key smokerKey = llDetectedKey(0);
+    //key smokerKey = llDetectedKey(0);
+    key smokerKey = avatarKey;
     string msg = "checking4Errors" + (string) smokerKey;
     llRegionSayTo(smokerKey,CHECK4ERROR_CHANNEL, msg);
     }
     
 checkOwner(){
-    key smokerKey = llDetectedKey(0);
+    //key smokerKey = llDetectedKey(0);
+    key smokerKey = owner;
     string msg = "checking4Errors" + (string) smokerKey;
     llRegionSayTo(smokerKey,CHECK4ERROR_CHANNEL, msg);
     }    
     
 _isHere(){
-     key smokerKey = llDetectedKey(0);
+    //key smokerKey = llDetectedKey(0);
+    key smokerKey = avatarKey;
     string er = "UseSomeHerb" + (string) smokerKey;
     llOwnerSay("REMOVE EXTRA GRAMS BEFORE ROLLING OR PACKING MARIJUANA. If you do not TAKE, script will delete extra rezzed grams on touch");
     llRegionSayTo(smokerKey,WAITING_CHANNEL, er);
     } 
     
 _isHereOwner(){
-     key smokerKey = llDetectedKey(0);
+    
+    // key smokerKey = llDetectedKey(0);
+    key smokerKey = owner;
     string er = "UseSomeHerb" + (string) smokerKey;
     llOwnerSay("REMOVE EXTRA GRAMS BEFORE ROLLING OR PACKING MARIJUANA. If you do not TAKE, script will delete extra rezzed grams on touch");
     llRegionSayTo(smokerKey,WAITING_CHANNEL, er);
@@ -140,7 +138,7 @@ default
      on_rez(integer smoking)
     {
         owner = llGetOwner();
-            
+
     }
     
     run_time_permissions( integer vGramPermissions )
