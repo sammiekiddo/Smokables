@@ -9,15 +9,10 @@
 list    ToolType;       // %%% all foos configured (subject)
 list    PrepCheck;      
 
-list    DrugChannel1;    // %%% value for each foo configured (integer value)
-list    DrugChannel2;
-list    DrugChannel3;
-list    DrugChannel4;
+list    DrugChannel;    // %%% value for each foo configured (integer value)
 
-list    PrepChannel1;    // %%% value for each foo configured (integer value)
-list    PrepChannel2;
-list    PrepChannel3;
-list    PrepChannel4;
+list    PrepChannel;    // %%% value for each foo configured (integer value)
+
 
 list    ReadyChannel;
 
@@ -82,15 +77,11 @@ config_dump()
     say("ToolType: "       + llList2CSV(ToolType));      // %%%
     say("PrepCheck: "      + llList2CSV(PrepCheck));
 
-    say("DrugChannel 1: "    + llList2CSV(DrugChannel1));   // %%%
-    say("DrugChannel 2: "    + llList2CSV(DrugChannel2));   // %%%
-    say("DrugChannel 3: "    + llList2CSV(DrugChannel3));   // %%%
-    say("DrugChannel 4: "    + llList2CSV(DrugChannel4));   // %%%
+    say("DrugChannel: "    + llList2CSV(DrugChannel));   // %%%
 
-    say("PrepChannel 1: "    + llList2CSV(PrepChannel1));   // %%%
-    say("PrepChannel 2: "    + llList2CSV(PrepChannel2));   // %%%
-    say("PrepChannel 3: "    + llList2CSV(PrepChannel3));   // %%%
-    say("PrepChannel 4: "    + llList2CSV(PrepChannel4));   // %%%
+
+    say("PrepChannel: "    + llList2CSV(PrepChannel));   // %%%
+
 
     say("ReadyChannel: "    + llList2CSV(ReadyChannel));   // %%%
 
@@ -293,19 +284,33 @@ integer next_card()
 
  /////////////////////NOTECARD READER SETUP END///////////////////////////
 
-integer WEED1_CHANNEL;                  //stress or bammer
-integer WEED2_CHANNEL;                  //chronic
-integer WEED3_CHANNEL;                  //kush
-integer WEED4_CHANNEL;                  //magic
-
-integer ROLLEDUP1_CHANNEL = 222222;              //stress or bammer
-integer ROLLEDUP2_CHANNEL;              //chronic
-integer ROLLEDUP3_CHANNEL;              //kush
-integer ROLLEDUP4_CHANNEL;              //magic
+integer WEED_CHANNEL;                  //
+integer ROLLEDUP_CHANNEL;              //
 
 integer START_CHANNEL;
-
+integer REPORT_WEED_CHANNEL = 2485934316;
+integer REPORT_ROLLEDUP_CHANNEL = 9547341316;
 key avatarKey;
+key owner;
+
+float sendChannelInfo = 1.0;
+
+reportInfo()
+{
+    key smokerKey = avatarKey;
+    string rollupReport = (string)ROLLEDUP_CHANNEL;
+    llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, rollupReport);
+ 
+    }
+
+reportInfoOwner()
+{
+    //key smokerKey = llDetectedKey(0);
+    key smokerKey = owner;
+    string msg = "UseSomeHerb" + (string) smokerKey;
+     llRegionSayTo(smokerKey,REPORT_CHANNEL, msg);
+    }
+
 
 remove()
     {
@@ -322,7 +327,6 @@ packbowl()
     llRegionSayTo(avatarKey,START_CHANNEL, msg);
     }
     
-  
 
 //STRESS BAGGIE //BAMMER
 packComplete_1()
@@ -341,45 +345,9 @@ packComplete_1()
     llMessageLinked(LINK_SET,0,"packed",llDetectedKey(1));
 
    // llRegionSayTo(avatarKey,ROLLEDUP1_CHANNEL, msg);
-    llRegionSayTo(avatarKey,ROLLEDUP1_CHANNEL, msg);
+    llRegionSayTo(avatarKey,ROLLEDUP_CHANNEL, msg);
     }
-
-//CHRONIC BAGGIE //SATIVA  
-packComplete_2()
-    {
-    key avatarKey = llDetectedKey(0);
-    string msg = "potIsFilled, " + (string) avatarKey;
-    integer a = (integer)llFrand(43);
-    llOwnerSay("Lift off!");
-    llRezObject("breaker01_chronic",llGetPos()+<0,0,0.1>,<0,0,0>,ZERO_ROTATION,a); //SWITCH TO JOINT//;
-    //ADD BOWL
-  // llRegionSayTo(llGetOwner(),ROLLEDUP2_CHANNEL, msg);
-   llRegionSayTo(avatarKey,ROLLEDUP2_CHANNEL, msg);
-    }    
-
-//KUSH BAGGIE //INDICA 
-packComplete_3()
-    {
-    key avatarKey = llDetectedKey(0);
-    string msg = "potIsFilled, " + (string) avatarKey;
-    integer a = (integer)llFrand(43);
-    llOwnerSay("Lift off!");
-    llRezObject("breaker01_kush",llGetPos()+<0,0,0.1>,<0,0,0>,ZERO_ROTATION,a); //SWITCH TO JOINT//;
-    //ADD BOWL
-    llRegionSayTo(avatarKey,ROLLEDUP3_CHANNEL, msg);
-    }
-    
-//KUSH BAGGIE //INDICA 
-packComplete_4()
-    {
-    key avatarKey = llDetectedKey(0);
-    string msg = "potIsFilled, " + (string) avatarKey;
-    integer a = (integer)llFrand(43);
-    llOwnerSay("Lift off!");
-    llRezObject("breaker01_hybrid",llGetPos()+<0,0,0.1>,<0,0,0>,ZERO_ROTATION,a); //SWITCH TO JOINT//;
-    //ADD BOWL
-    llRegionSayTo(avatarKey,ROLLEDUP4_CHANNEL, msg);
-    }         
+       
 
 integer listenHandle_a;
 integer listenHandle_b;
@@ -642,31 +610,15 @@ state s_active
     state_entry()
     {
        //SET CHANNEL LISTENERS FROM NOTECARD TOOLSERIAL
-         ROLLEDUP1_CHANNEL = channelCodes_rollup1;
+         ROLLEDUP_CHANNEL = channelCodes_rollup1;
          
-         WEED1_CHANNEL = channelCodes_weed1;
-         listenHandle_a = llListen( WEED1_CHANNEL, "", "", "" );
-        
-        
+         //LISTEN FOR USER TO REPORT WEED TYPE AND PREP
+         listenHandle_b = llListen( WEED_REPORT_CHANNEL, "", "", "" );
         
         
         START_CHANNEL = llGetListEntryType(ReadyChannel, channelCodes);
-
-        WEED2_CHANNEL = llGetListEntryType(DrugChannel2, channelCodes);
-        listenHandle_b = llListen( WEED2_CHANNEL, "", "", "" );
-
-        WEED3_CHANNEL = llGetListEntryType(DrugChannel3, channelCodes);
-        listenHandle_c = llListen( WEED3_CHANNEL, "", "", "" );
-
-        WEED4_CHANNEL = llGetListEntryType(DrugChannel4, channelCodes);
-        listenHandle_d = llListen( WEED4_CHANNEL, "", "", "" );
-
-
-       
-        ROLLEDUP2_CHANNEL = llGetListEntryType(PrepChannel2, channelCodes);
-        ROLLEDUP3_CHANNEL = llGetListEntryType(PrepChannel3, channelCodes);
-        ROLLEDUP4_CHANNEL = llGetListEntryType(PrepChannel4, channelCodes);
-        
+        llSetTimerEvent(sendChannelInfo);
+        reportInfo();
 
     }
 
@@ -674,28 +626,29 @@ state s_active
     touch(integer test){
         config_dump();
         avatarKey = llDetectedKey(0);
-         llOwnerSay("WEED1_CHANNEL: " +(string)WEED1_CHANNEL);
-         llOwnerSay("ROLLEDUP1_CHANNEL: " +(string)ROLLEDUP1_CHANNEL);
+        llOwnerSay("WEED_CHANNEL: " +(string)WEED_CHANNEL);
+        llOwnerSay("ROLLEDUP_CHANNEL: " +(string)ROLLEDUP_CHANNEL);
         }
         
         
         listen( integer vIntChn, string vStrNom, key vKeySrc, string vStrMsg )
    {    
-        if(vIntChn == WEED1_CHANNEL){
+        if(vIntChn == WEED_CHANNEL){
         packComplete_1();
         }
         
-        if(vIntChn == WEED2_CHANNEL){
-        packComplete_2();
-        }
+        if(vIntChn == REPORT_WEED_CHANNEL)
+       {
+        integer rr_convertToInt = (integer)vStrMsg;
+        WEED_CHANNEL = rr_convertToInt;
+        listenHandle_a = llListen( WEED_CHANNEL, "", "", "" );
+        //if((string)((integer)vStrMsg) == vStrMsg){
+       }
+    }
+
+    timer(){
+        //reportInfo();
         
-        if(vIntChn == WEED3_CHANNEL){
-        packComplete_3();
-        }
-        
-        if(vIntChn == WEED4_CHANNEL){
-        packComplete_4();
-        }
     }
  
 
