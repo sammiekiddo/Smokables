@@ -299,6 +299,7 @@ key owner;
 
 integer REPORT_WEED_CHANNEL = 2485934316;
 integer REPORT_ROLLEDUP_CHANNEL = 9547341316;
+integer ATTACH_KEY_CHANNEL = 4936412338;
 
 integer groupSession = FALSE;
 
@@ -325,6 +326,13 @@ string  hoverText   = "TEXT GOES HERE";//NAME OF MARIJUANA
 vector  hoverColor  = GRAY;//  set predefined color or any RGB color vector in float form
 vector  hoverColor2  = PURPLE;//
 float   hoverAlpha  = 1.0; // Sets the text's transparency, 1.0 being opaque, while 0.0 would be transparent
+
+sendID(){
+    key smokerKey = avatarKey;
+    string IDReport = "users key";
+    llRegionSayTo(smokerKey,ATTACH_KEY_CHANNEL, IDReport);
+
+}
 
 reportInfo()
 {
@@ -695,10 +703,12 @@ state s_active
         if (owner == avatarKey && vGramPermissions & PERMISSION_ATTACH ){   
             llAttachToAvatarTemp( ATTACH_RHAND );
             _holding = TRUE;
+            sendID();
              
         }else if (owner != avatarKey && vGramPermissions & PERMISSION_ATTACH ){     
             llAttachToAvatarTemp( ATTACH_RHAND );
             groupSession = TRUE;
+            sendID();
             
         
         }else     
@@ -740,7 +750,6 @@ state s_active
         if(avatarKey == owner && _holding == FALSE){ 
         llSetTimerEvent(0.1);
         llRequestPermissions(owner, PERMISSION_ATTACH );
-        
         }
         
         if(avatarKey == owner && _holding == TRUE) {

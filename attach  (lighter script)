@@ -2,6 +2,8 @@ float detachTime = 110;
 key owner;
 key avatarKey;
 
+integer ATTACH_KEY_CHANNEL = 4936412338;
+
 default
 {
 

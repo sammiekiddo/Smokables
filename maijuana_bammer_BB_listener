@@ -292,8 +292,19 @@ integer REPORT_WEED_CHANNEL = 2485934316;
 integer REPORT_ROLLEDUP_CHANNEL = 9547341316;
 key avatarKey;
 key owner;
+key keyTransfer;
+integer _isOwner = FALSE; 
 
 float sendChannelInfo = 1.0;
+integer ATTACH_KEY_CHANNEL = 4936412338;
+
+saveKey(){
+    keyTransfer = avatarKey;
+    owner = llGetOwner();
+    if (avatarKey == owner){
+        _isOwner = TRUE;
+    }
+}
 
 reportInfo()
 {
@@ -302,15 +313,6 @@ reportInfo()
     llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, rollupReport);
  
     }
-
-reportInfoOwner()
-{
-    //key smokerKey = llDetectedKey(0);
-    key smokerKey = owner;
-    string msg = "UseSomeHerb" + (string) smokerKey;
-     llRegionSayTo(smokerKey,REPORT_CHANNEL, msg);
-    }
-
 
 remove()
     {
@@ -353,6 +355,7 @@ integer listenHandle_a;
 integer listenHandle_b;
 integer listenHandle_c;
 integer listenHandle_d;
+integer listenHandle_e;
 
 integer channelCodes_rollup1;
 integer channelCodes_weed1;
@@ -613,8 +616,8 @@ state s_active
          ROLLEDUP_CHANNEL = channelCodes_rollup1;
          
          //LISTEN FOR USER TO REPORT WEED TYPE AND PREP
-         listenHandle_b = llListen( WEED_REPORT_CHANNEL, "", "", "" );
-        
+         listenHandle_a = llListen( WEED_REPORT_CHANNEL, "", "", "" );
+        listenHandle_b = llListen( ATTACH_KEY_CHANNEL, "", "", "" );
         
         START_CHANNEL = llGetListEntryType(ReadyChannel, channelCodes);
         llSetTimerEvent(sendChannelInfo);
@@ -644,6 +647,11 @@ state s_active
         listenHandle_a = llListen( WEED_CHANNEL, "", "", "" );
         //if((string)((integer)vStrMsg) == vStrMsg){
        }
+       if(vIntChn == ATTACH_KEY_CHANNEL){
+        keyTransfer = vKeySrc;
+        saveKey();
+       }
+
     }
 
     timer(){
