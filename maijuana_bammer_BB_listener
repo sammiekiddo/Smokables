@@ -617,7 +617,7 @@ state s_active
          
          //LISTEN FOR USER TO REPORT WEED TYPE AND PREP
          listenHandle_a = llListen( WEED_REPORT_CHANNEL, "", "", "" );
-        listenHandle_b = llListen( ATTACH_KEY_CHANNEL, "", "", "" );
+         listenHandle_b = llListen( ATTACH_KEY_CHANNEL, "", "", "" );
         
         START_CHANNEL = llGetListEntryType(ReadyChannel, channelCodes);
         llSetTimerEvent(sendChannelInfo);
