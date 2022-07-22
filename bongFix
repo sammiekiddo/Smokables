@@ -306,14 +306,24 @@ saveKey(){
 
 reportInfo()
 {
-    key smokerKey = avatarKey;
-    //key smokerKey= llDetectedKey(0);
-    //string rollupReport = (string)ROLLEDUP_CHANNEL;
-    string rollupReport = "reporting current ROLLEDUP_CHANNEL," + (string) smokerKey;
-    //integer a = (integer)llFrand(43); 
-    integer channelValue = ROLLEDUP_CHANNEL;
-    llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, channelValue);
-    //llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, rollupReport);
+    //REPORT_ROLLEDUP_CHANNEL = ROLLEDUP_CHANNEL;
+
+     
+     if(avatarKey == owner){
+        smokerKey = owner;
+        //string IDReport = "reporting current user key," + (string) smokerKey;
+        string IDReport = (string)ROLLEDUP_CHANNEL;
+        integer a = (integer)llFrand(43);
+        llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, rollupReport); 
+    }
+
+    if(avatarKey != owner){
+        smokerKey = avatarKey;
+        //string IDReport = "reporting current user key," + (string) smokerKey;
+        string IDReport = (string)ROLLEDUP_CHANNEL;
+        integer a = (integer)llFrand(43); 
+        llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, rollupReport);
+    }
  
     }
 
@@ -386,6 +396,24 @@ default
         state s_config;
         }
 
+        listen( integer vIntChn, string vStrNom, key vKeySrc, string vStrMsg )
+   {    
+        if(vIntChn == WEED_CHANNEL){
+        packComplete_1();
+        }
+        
+        if(vIntChn == REPORT_WEED_CHANNEL)
+       {
+        WEED_CHANNEL = REPORT_WEED_CHANNEL;
+        listenHandle_a = llListen( WEED_CHANNEL, "", "", "" );
+        
+       }
+       if(vIntChn == ATTACH_KEY_CHANNEL){
+        keyTransfer = vKeySrc;
+        saveKey();
+       }
+
+    }
 
 // This state is only used to get into s_config, because going from
 
@@ -630,32 +658,18 @@ state s_active
 
 
     touch(integer test){
-        //config_dump();
-        avatarKey = llDetectedKey(0);
-        llOwnerSay("WEED_CHANNEL: " +(string)WEED_CHANNEL);
-        llOwnerSay("ROLLEDUP_CHANNEL: " +(string)ROLLEDUP_CHANNEL);
-        }
-        
-        
-        listen( integer vIntChn, string vStrNom, key vKeySrc, string vStrMsg )
-   {    
-        if(vIntChn == WEED_CHANNEL){
-        packComplete_1();
-        }
-        
-        if(vIntChn == REPORT_WEED_CHANNEL)
-       {
-        WEED_CHANNEL = (integer)vStrMsg;
-        listenHandle_a = llListen( WEED_CHANNEL, "", "", "" );
-        llSay(0,"REPORT: " + (string)WEED_CHANNEL);
-        //if((string)((integer)vStrMsg) == vStrMsg){
-       }
-       if(vIntChn == ATTACH_KEY_CHANNEL){
-        keyTransfer = vKeySrc;
-        saveKey();
-       }
 
-    }
+        //////////////////DEBUG TOOL////////////////////////////
+        config_dump();
+        llSay("WEED_CHANNEL: " +(string)WEED_CHANNEL);
+        llSay("ROLLEDUP_CHANNEL: " +(string)ROLLEDUP_CHANNEL);
+        //////////////////DEBUG TOOL////////////////////////////
+
+        avatarKey = llDetectedKey(0);
+        }
+        
+        
+
 
     timer(){
         reportInfo();

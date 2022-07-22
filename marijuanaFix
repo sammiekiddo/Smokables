@@ -335,14 +335,14 @@ sendID()
 {
     if(avatarKey == owner){
         smokerKey = owner;
-        string IDReport = "reporting current user key," + (string) smokerKey;
+        string IDReport = (string)smokerKey;
         integer a = (integer)llFrand(43);
         llRegionSayTo(smokerKey,ATTACH_KEY_CHANNEL, IDReport); 
     }
 
     if(avatarKey != owner){
         smokerKey = avatarKey;
-        string IDReport = "reporting current user key," + (string) smokerKey;
+        string IDReport = (string) smokerKey;
         integer a = (integer)llFrand(43); 
         llRegionSayTo(smokerKey,ATTACH_KEY_CHANNEL, IDReport);
     }
@@ -353,15 +353,15 @@ reportInfo()
 {
         if(avatarKey == owner){
         smokerKey = owner;
-        string IDReport = "reporting current WEED_CHANNEL," + (string) smokerKey;
-        integer channelValue = WEED_CHANNEL;
+        string IDReport = (string)WEED_CHANNEL;
+        integer a = (integer)llFrand(43);
         llRegionSayTo(smokerKey,REPORT_WEED_CHANNEL, IDReport); 
     }
 
     if(avatarKey != owner){
         smokerKey = avatarKey;
-        string IDReport = "reporting current WEED_CHANNEL," + (string) smokerKey;
-        integer channelValue = WEED_CHANNEL;
+        string IDReport = (string)WEED_CHANNEL;
+        integer a = (integer)llFrand(43);
         llRegionSayTo(smokerKey,REPORT_WEED_CHANNEL, IDReport);
     }
     llSetTimerEvent(3);
