@@ -1,0 +1,680 @@
+//Author Samantha Bene` Howze (sammiekiddo)
+//Copyright Samantha Bene` Howze (sammiekiddo)
+//All right of scripted code belong to Samantha Bene` Howze (sammiekiddo)
+
+
+
+ /////////////////////NOTECARD READER SETUP///////////////////////////
+
+list    ToolType;       // %%% all foos configured (subject)
+list    PrepCheck;      
+
+list    DrugChannel;    // %%% value for each foo configured (integer value)
+
+list    PrepChannel;    // %%% value for each foo configured (integer value)
+
+
+list    ReadyChannel;
+
+float   RegistryNumbers;        // %%% a configurable parameter
+
+// %%% Static parameters for reading card config: you may change these, but don't have to.
+
+integer ConfigRequired          = FALSE;        // whether to fail if no config cards
+
+string  ConfigNotecardSuffix    = ".cfg";       // string identifying config notecards
+
+float   ConfigTimeout           = 60.0;         // seconds to wait for slow server
+
+ 
+
+ 
+
+// Globals for reading card config
+
+integer ConfigLineIndex;    // line number in notecard we're reading
+
+key     ConfigRequestID;    // request we're waiting for
+
+list    ConfigCards;        // list of names of config notecards
+
+string  ConfigCardName;     // name of card being read
+
+integer ConfigCardIndex;    // index of next card to read
+
+ 
+
+integer Debug;              // Whether to print debug text
+
+ 
+
+ 
+
+config_init()
+
+{
+
+
+    ToolType = [];          // %%%
+    PrepCheck = [];          // %%% 
+
+    RegistryNumbers  = 000000000;        // %%%
+
+}
+
+ 
+
+// print the configuration, handy for debugging.
+
+ 
+
+config_dump()
+
+{
+
+    // Replace this example code with your config %%%.
+
+    say("ToolType: "       + llList2CSV(ToolType));      // %%%
+    say("PrepCheck: "      + llList2CSV(PrepCheck));
+
+    say("DrugChannel: "    + llList2CSV(DrugChannel));   // %%%
+
+
+    say("PrepChannel: "    + llList2CSV(PrepChannel));   // %%%
+
+
+    say("ReadyChannel: "    + llList2CSV(ReadyChannel));   // %%%
+
+    say("RegistryNumbers: "        + (string) RegistryNumbers);          // %%%     
+
+}
+
+ 
+
+config_parse(string str, string cardName, integer lineNum)
+
+{
+
+    str = llStringTrim(str, STRING_TRIM_HEAD);  // delete leading spaces
+
+ 
+
+    // lines beginning with slash are comments -- ignore them
+
+    if (llGetSubString(str,0,0) == "/") {
+
+        return;
+
+    }
+
+ 
+
+    list ldata  = llParseStringKeepNulls(str, ["="], [""]);
+
+    string cmd  = llList2String(ldata,0);
+
+    string arg1 = llList2String(ldata,1);
+
+    string arg2 = llList2String(ldata,2);
+
+    // %%% Add more lines such as the above as needed for more arguments.
+    //ADD ADDITIONAL LINES FOR TOOLCHANNEL FROM LISTENERS
+    //STARTING WITH:
+
+  //  string arg3 = llList2String(ldata,3);//LINE 3 OF NOTECARD
+   // string arg4 = llList2String(ldata,4);
+    //weed=WEED1_CHANNEL=-18065431=SOMETHING ELSE (also and new varible EX.ToolMessage)
+
+    // %%% Process example commands -- replace this code with meaningful stuff! %%%
+
+
+//////////////////DRUGS///////////////////////////
+    if (cmd == "weed") {
+
+ 
+        ToolType    += [arg1];
+        DrugChannel += [(integer) arg2];
+
+  //  } else if (cmd == "weed2") {
+
+ //       ToolType    += [arg1];
+   //     DrugChannel += [(integer) arg2];
+
+  //  } else if (cmd == "weed3") {
+
+   //    ToolType    += [arg1];
+   //     DrugChannel += [(integer) arg2];
+
+  //  }else if (cmd == "weed4"){
+
+   //     ToolType    += [arg1];
+    //    DrugChannel += [(integer) arg2];
+
+    } 
+//////////////////ROLLUP///////////////////////////
+    else if (cmd == "rollup") {
+
+        PrepCheck    += [arg1];
+        PrepChannel += [(integer) arg2];
+        channelCodes_rollup1 += (integer)arg2;
+        
+
+   // }else if (cmd == "rollup2") {
+     //   PrepCheck    += [arg1];
+    //    PrepChannel += [(integer) arg2];
+    //}
+   // else if (cmd == "rollup3") {
+    //    PrepCheck    += [arg1];
+    //    PrepChannel += [(integer) arg2];
+   // }
+   // else if (cmd == "rollup4") {
+  //      PrepCheck    += [arg1];
+  //      PrepChannel4 += [(integer) arg2];
+    }
+
+    else if (cmd == "foo") {
+        ToolType    += [arg1];
+
+        ReadyChannel += [(integer) arg2];
+    }
+    
+     else if (cmd == "bar") {
+
+        RegistryNumbers = (float) arg1;
+
+    }
+
+ 
+
+    // this one is a good one to keep
+
+    else if (cmd == "debug") {
+
+        Debug = (integer) arg1;
+
+    }
+
+}
+
+
+// Post-process any config, if necessary
+
+config_done() {
+
+    if (Debug) {
+
+        config_dump();
+
+    }
+
+    say("Config done");
+
+}
+
+
+// ==== Utilities ====
+
+ 
+
+// Say something, in this case to owner (%%% modify to whisper or whatever)
+
+ 
+
+say(string str)
+
+{
+
+    llOwnerSay(str);
+
+}
+
+ 
+// Say something if debug is enabled
+
+debug(string str)
+
+{
+
+    if (Debug) {
+
+        say(llGetScriptName() + ": " + str);
+
+    }
+
+}
+
+ 
+
+// Get the next notecard name, and
+
+// return TRUE if there is one
+
+ 
+
+integer next_card()
+
+{
+
+    if (ConfigCardIndex >= llGetListLength(ConfigCards)) {
+
+        ConfigCards = [];
+
+        return (FALSE);
+
+    }
+
+ 
+
+    ConfigLineIndex = 0;
+
+    ConfigCardName = llList2String(ConfigCards, ConfigCardIndex);
+
+    ConfigCardIndex++;
+
+    ConfigRequestID = llGetNotecardLine(ConfigCardName, ConfigLineIndex);
+
+    say("Reading " + ConfigCardName);
+
+    return (TRUE);
+
+}
+
+
+ /////////////////////NOTECARD READER SETUP END///////////////////////////
+
+integer WEED_CHANNEL;                  //
+integer ROLLEDUP_CHANNEL;              //
+
+integer START_CHANNEL;
+integer REPORT_WEED_CHANNEL = 2485934316;
+integer REPORT_ROLLEDUP_CHANNEL = 9547341316;
+key avatarKey;
+key owner;
+key keyTransfer;
+integer _isOwner = FALSE; 
+
+float sendChannelInfo = 1.0;
+integer ATTACH_KEY_CHANNEL = 4936412338;
+
+saveKey(){
+    avatarKey = keyTransfer;
+    owner = llGetOwner();
+    if (avatarKey == owner){
+        _isOwner = TRUE;
+    }
+}
+
+reportInfo()
+{
+    key smokerKey = avatarKey;
+    //key smokerKey= llDetectedKey(0);
+    //string rollupReport = (string)ROLLEDUP_CHANNEL;
+    string rollupReport = "reporting current ROLLEDUP_CHANNEL," + (string) smokerKey;
+    //integer a = (integer)llFrand(43); 
+    integer channelValue = ROLLEDUP_CHANNEL;
+    llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, channelValue);
+    //llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, rollupReport);
+ 
+    }
+
+remove()
+    {
+    llSetStatus(STATUS_PHYSICS, FALSE);
+    llSetAlpha(0.0, ALL_SIDES);
+    llDie();
+    }
+
+packbowl()
+    {
+    key avatarKey = llDetectedKey(0);
+    string msg = "potIsFilled, " + (string) avatarKey;
+    integer a = (integer)llFrand(43); 
+    llRegionSayTo(avatarKey,START_CHANNEL, msg);
+    }
+    
+
+//STRESS BAGGIE //BAMMER
+packComplete_1()
+    {
+    key avatarKey = llDetectedKey(0);
+    string msg = "potIsFilled, " + (string) avatarKey;
+    integer a = (integer)llFrand(43);
+    llOwnerSay("Lift off!");
+  //llRezObject("HG_Breaker01_BONG_stress",llGetPos()+<0,0,0.1>,<0,0,0>,ZERO_ROTATION,a); //SWITCH TO JOINT//;
+    llRezObject("HG_Lighter",llGetPos()+<0,0,0.1>,<0,0,0>,ZERO_ROTATION,a); //SWITCH TO JOINT//;
+    
+    ///////SMOKE EFFECT HUD///////
+     llRezObject("hudTest",llGetPos()+<0,0,0.1>,<0,0,0>,ZERO_ROTATION,a); //HUD TO BE ATTACHED//;
+    
+    
+    llMessageLinked(LINK_SET,0,"packed",llDetectedKey(1));
+
+   // llRegionSayTo(avatarKey,ROLLEDUP1_CHANNEL, msg);
+    llRegionSayTo(avatarKey,ROLLEDUP_CHANNEL, msg);
+    }
+       
+
+integer listenHandle_a;
+integer listenHandle_b;
+integer listenHandle_c;
+integer listenHandle_d;
+integer listenHandle_e;
+
+integer channelCodes_rollup1;
+integer channelCodes_weed1;
+integer channelCodes;
+
+/////////////////////////LISTENER SETUP END///////////////////////////////////////////
+
+
+// BEGIN STATES
+
+
+
+// Default state can do any init you need that doesn't require configuration.
+
+ 
+
+default
+
+{
+
+    state_entry() {
+
+        //llSetText("", <1.0,1.0,1.0>, 1.0);
+
+        state s_config;
+        }
+
+
+// This state is only used to get into s_config, because going from
+
+// s_config to s_config won't redo it's state_entry.  But we might
+
+// not want to redo anything we might have put in default state entry.
+
+ 
+}
+state s_reconfig
+{
+
+    state_entry() {
+
+        state s_config;
+        
+    }
+
+}
+
+ 
+
+// Read card config
+
+// Multiple notecard version - read all cards with the given extension
+
+ 
+
+state s_config
+
+{
+
+    state_entry() {
+
+        config_init();
+
+ 
+
+        string item;
+
+        ConfigCards = [];
+
+        integer n = llGetInventoryNumber(INVENTORY_NOTECARD);
+
+        while (n-- > 0) {
+
+            item = llGetInventoryName(INVENTORY_NOTECARD, n);
+
+            // Note: for simplicity, read cards with the "suffix" anywhere in the name
+
+            if (llSubStringIndex(item, ConfigNotecardSuffix) != -1) {
+
+                ConfigCards += [item];
+
+            }
+
+        }
+
+ 
+
+        ConfigCardIndex = 0;
+
+        if (next_card()) {
+
+            llSetTimerEvent(ConfigTimeout);
+
+        } else if (ConfigRequired) {
+
+            say("Configuration notecard missing.");              
+
+            state s_configRetry;
+
+        } else {
+
+            state s_active;
+
+        }
+
+    }
+
+ 
+
+    dataserver(key query_id, string data) {
+
+        if (query_id == ConfigRequestID) {
+
+            if (data == EOF) {
+
+                if (! next_card()) {
+
+                    config_done();
+
+                    state s_active;
+
+                }
+
+            } else {
+
+                config_parse(data, ConfigCardName, ConfigLineIndex);
+
+                ConfigRequestID = llGetNotecardLine(ConfigCardName, ++ConfigLineIndex);
+
+                llSetTimerEvent(ConfigTimeout);
+
+            }
+
+        }
+
+    }
+
+ 
+
+    timer() {
+
+        say("Dataserver time out: touch to retry");
+
+        state s_configRetry;
+
+    }
+
+ 
+
+    on_rez(integer num) { state s_reconfig; }
+
+ 
+
+    changed(integer change) {
+
+        if (change & CHANGED_OWNER) { llResetScript(); }
+
+        if (change & CHANGED_INVENTORY) { state s_reconfig; }
+
+    }
+
+ 
+
+    state_exit() {
+
+        llSetTimerEvent(0);
+
+    }
+
+}
+
+ 
+
+state s_configRetry
+
+{
+
+    touch_start(integer tot) {
+
+        if (llDetectedKey(0) == llGetOwner()) {
+
+            state s_config;
+
+        }
+
+    }
+
+ 
+
+    changed(integer change) {
+
+        if (change & CHANGED_OWNER) { llResetScript(); }
+
+        if (change & CHANGED_INVENTORY) { state s_config; }
+
+    }
+
+}
+
+ 
+
+// State to go into if notecard is required but missing.
+
+// You can delete this and the code above that refers to it,
+
+// or just set ConfigurationRequired to FALSE.
+
+state s_unconfigured
+
+{
+
+    state_entry() {
+
+        llSetText("Configuration missing", <1.0,1.0,1.0>, 1.0);
+
+    }
+
+ 
+
+    changed(integer change) {
+
+        if (change & CHANGED_OWNER) { llResetScript(); }
+
+        if (change & CHANGED_INVENTORY) { state s_reconfig; }
+
+    }
+
+ 
+
+    state_exit() {
+
+        llSetText("", <1.0,1.0,1.0>, 1.0);
+
+    }
+
+}
+
+ 
+ 
+
+// The fun starts here!
+
+ 
+
+state s_active
+
+{
+
+ 
+
+    // %%% Your code goes here!
+
+    
+    state_entry()
+    {
+       //SET CHANNEL LISTENERS FROM NOTECARD TOOLSERIAL
+         ROLLEDUP_CHANNEL = channelCodes_rollup1;
+         
+         //LISTEN FOR USER TO REPORT WEED TYPE AND PREP
+        listenHandle_a = llListen( REPORT_WEED_CHANNEL, "", "", "" );
+        listenHandle_b = llListen( ATTACH_KEY_CHANNEL, "", "", "" );
+        listenHandle_b = llListen( WEED_CHANNEL, "", "", "" );
+        
+        START_CHANNEL = llGetListEntryType(ReadyChannel, channelCodes);
+       // llSetTimerEvent(sendChannelInfo);
+       // reportInfo();
+
+    }
+
+
+    touch(integer test){
+        //config_dump();
+        avatarKey = llDetectedKey(0);
+        llOwnerSay("WEED_CHANNEL: " +(string)WEED_CHANNEL);
+        llOwnerSay("ROLLEDUP_CHANNEL: " +(string)ROLLEDUP_CHANNEL);
+        }
+        
+        
+        listen( integer vIntChn, string vStrNom, key vKeySrc, string vStrMsg )
+   {    
+        if(vIntChn == WEED_CHANNEL){
+        packComplete_1();
+        }
+        
+        if(vIntChn == REPORT_WEED_CHANNEL)
+       {
+        WEED_CHANNEL = (integer)vStrMsg;
+        listenHandle_a = llListen( WEED_CHANNEL, "", "", "" );
+        llSay(0,"REPORT: " + (string)WEED_CHANNEL);
+        //if((string)((integer)vStrMsg) == vStrMsg){
+       }
+       if(vIntChn == ATTACH_KEY_CHANNEL){
+        keyTransfer = vKeySrc;
+        saveKey();
+       }
+
+    }
+
+    timer(){
+        reportInfo();
+        
+    }
+ 
+
+ 
+
+    // Every state should usually have this, or something like it.
+
+    changed(integer change) {
+
+        if (change & CHANGED_OWNER) { llResetScript(); }
+
+        if (change & CHANGED_INVENTORY) { state s_reconfig; }
+
+    }
+
+}
+
+
