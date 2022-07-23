@@ -1,0 +1,39 @@
+llListen(gMyChannel,"","","");
+
+    listen(integer(channel, string name, key id, string message){  
+      integer idx = llListFindList(["Material1","Material2","Material3"],[message]); 
+         if (!~idx)    {     
+               //Not a relevant message    }  
+                 else if (idx == 0)    {      
+                  // Do Material1 stuff    }   
+                   else if ( idx == 1)    {     
+                       // Do Material 2 stuff    } 
+                          else    {      
+                          // Do Material3 stuff    }
+                          }
+
+
+list Testing = ["Material1","Material2","Material3"];
+ string Material;
+ init()
+ {  
+    llListen(0,"","","");   }
+    default
+    {   
+         state_entry()   
+          {  init(); 
+
+           }    
+           on_rez(integer param)    
+           { init();   
+            }   
+             
+    listen(integer channel, string name, key id, string message)
+   {     
+     if( Material  = llList2String( Testing, llListFindList(Testing,[message])  )  )
+       { 
+         //Material is now set to the message
+       }
+   }
+   
+    }

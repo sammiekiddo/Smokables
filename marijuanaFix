@@ -401,7 +401,7 @@ check(){
     }
     
 checkOwner(){
-    //key smokerKey = llDetectedKey(0);
+    key smokerKey = llDetectedKey(0);
     key smokerKey = owner;
     string msg = "checking4Errors" + (string) smokerKey;
     llRegionSayTo(smokerKey,CHECK4ERROR_CHANNEL, msg);
@@ -506,7 +506,7 @@ default
        
         if(vIntChn == REPORT_ROLLEDUP_CHANNEL)
        {
-        ROLLEDUP_CHANNEL = (integer)vStrMsg;
+        ROLLEDUP_CHANNEL += (integer)vStrMsg;
         listenHandle_e = llListen( ROLLEDUP_CHANNEL, "", "", "" );
         llSay(0,"REPORT: " + (string)ROLLEDUP_CHANNEL);
         llSay(0,"TEST: " + vStrMsg);
@@ -745,15 +745,20 @@ state s_active
     // %%% Your code goes here!
     state_entry()
     {
-    owner = llGetOwner();
+    //SET CHANNEL LISTENERS FROM NOTECARD TOOLSERIAL
+    WEED_CHANNEL = channelCodes_weed1;
     
+    
+    
+    owner = llGetOwner();
+
+     //LISTEN FOR USER TO REPORT WEED TYPE AND PREP
     listenHandle_a = llListen( ROLLEDUP_CHANNEL, "", "", "" );
-    listenHandle_b = llListen( CHECK4ERROR_CHANNEL, "", "", "" ); 
+   // listenHandle_b = llListen( CHECK4ERROR_CHANNEL, "", "", "" ); 
     listenHandle_c = llListen( WAITING_CHANNEL, "", "", "" );  
     listenHandle_d = llListen( START_CHANNEL, "", "", "" );
     
     
-    //avatarKey = llDetectedKey(0);
     //NAME OF WEED TYPE
     //llSetText("Soil: " + "24/" + (string)bagWeight,hoverColor,hoverAlpha);
 

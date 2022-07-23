@@ -279,7 +279,6 @@ integer next_card()
 
 }
 
-
  /////////////////////NOTECARD READER SETUP END///////////////////////////
 
 integer WEED_CHANNEL;                  //
@@ -367,8 +366,6 @@ packComplete_1()
 integer listenHandle_a;
 integer listenHandle_b;
 integer listenHandle_c;
-integer listenHandle_d;
-integer listenHandle_e;
 
 integer channelCodes_rollup1;
 integer channelCodes_weed1;
@@ -404,9 +401,9 @@ default
         
         if(vIntChn == REPORT_WEED_CHANNEL)
        {
-        WEED_CHANNEL = REPORT_WEED_CHANNEL;
-        listenHandle_a = llListen( WEED_CHANNEL, "", "", "" );
-        
+        WEED_CHANNEL += (integer)vStrMsg;
+        listenHandle_c = llListen( WEED_CHANNEL, "", "", "" );
+        llSay(0,"REPORT: " + (string)WEED_CHANNEL_CHANNEL);
        }
        if(vIntChn == ATTACH_KEY_CHANNEL){
         keyTransfer = vKeySrc;
@@ -648,7 +645,7 @@ state s_active
          //LISTEN FOR USER TO REPORT WEED TYPE AND PREP
         listenHandle_a = llListen( REPORT_WEED_CHANNEL, "", "", "" );
         listenHandle_b = llListen( ATTACH_KEY_CHANNEL, "", "", "" );
-        listenHandle_b = llListen( WEED_CHANNEL, "", "", "" );
+        
         
         START_CHANNEL = llGetListEntryType(ReadyChannel, channelCodes);
        // llSetTimerEvent(sendChannelInfo);
@@ -661,8 +658,8 @@ state s_active
 
         //////////////////DEBUG TOOL////////////////////////////
         config_dump();
-        llSay(0,"WEED_CHANNEL: " +(string)WEED_CHANNEL);
-        llSay(0,"ROLLEDUP_CHANNEL: " +(string)ROLLEDUP_CHANNEL);
+        llSay(0,"WEED_CHANNEL: " + (string)WEED_CHANNEL);
+        llSay(0,"ROLLEDUP_CHANNEL: " + (string)ROLLEDUP_CHANNEL);
         //////////////////DEBUG TOOL////////////////////////////
 
         avatarKey = llDetectedKey(0);
