@@ -334,14 +334,14 @@ float   hoverAlpha  = 1.0; // Sets the text's transparency, 1.0 being opaque, wh
 sendID()
 {
     if(avatarKey == owner){
-        smokerKey = owner;
+        key smokerKey = owner;
         string IDReport = (string)smokerKey;
         integer a = (integer)llFrand(43);
         llRegionSayTo(smokerKey,ATTACH_KEY_CHANNEL, IDReport); 
     }
 
     if(avatarKey != owner){
-        smokerKey = avatarKey;
+        key smokerKey = avatarKey;
         string IDReport = (string) smokerKey;
         integer a = (integer)llFrand(43); 
         llRegionSayTo(smokerKey,ATTACH_KEY_CHANNEL, IDReport);
@@ -352,14 +352,14 @@ sendID()
 reportInfo()
 {
         if(avatarKey == owner){
-        smokerKey = owner;
+        key smokerKey = owner;
         string IDReport = (string)WEED_CHANNEL;
         integer a = (integer)llFrand(43);
         llRegionSayTo(smokerKey,REPORT_WEED_CHANNEL, IDReport); 
     }
 
     if(avatarKey != owner){
-        smokerKey = avatarKey;
+        key smokerKey = avatarKey;
         string IDReport = (string)WEED_CHANNEL;
         integer a = (integer)llFrand(43);
         llRegionSayTo(smokerKey,REPORT_WEED_CHANNEL, IDReport);
@@ -506,7 +506,7 @@ default
        
         if(vIntChn == REPORT_ROLLEDUP_CHANNEL)
        {
-        ROLLEDUP_CHANNEL = (integer)test;
+        ROLLEDUP_CHANNEL = (integer)vStrMsg;
         listenHandle_e = llListen( ROLLEDUP_CHANNEL, "", "", "" );
         llSay(0,"REPORT: " + (string)ROLLEDUP_CHANNEL);
         llSay(0,"TEST: " + vStrMsg);
@@ -852,5 +852,4 @@ state s_active
     }
 
 }
-
 

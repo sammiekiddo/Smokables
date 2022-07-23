@@ -310,17 +310,17 @@ reportInfo()
 
      
      if(avatarKey == owner){
-        smokerKey = owner;
+        key smokerKey = owner;
         //string IDReport = "reporting current user key," + (string) smokerKey;
-        string IDReport = (string)ROLLEDUP_CHANNEL;
+        string rollupReport = (string)ROLLEDUP_CHANNEL;
         integer a = (integer)llFrand(43);
         llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, rollupReport); 
     }
 
     if(avatarKey != owner){
-        smokerKey = avatarKey;
+        key smokerKey = avatarKey;
         //string IDReport = "reporting current user key," + (string) smokerKey;
-        string IDReport = (string)ROLLEDUP_CHANNEL;
+        string rollupReport = (string)ROLLEDUP_CHANNEL;
         integer a = (integer)llFrand(43); 
         llRegionSayTo(smokerKey,REPORT_ROLLEDUP_CHANNEL, rollupReport);
     }
@@ -661,8 +661,8 @@ state s_active
 
         //////////////////DEBUG TOOL////////////////////////////
         config_dump();
-        llSay("WEED_CHANNEL: " +(string)WEED_CHANNEL);
-        llSay("ROLLEDUP_CHANNEL: " +(string)ROLLEDUP_CHANNEL);
+        llSay(0,"WEED_CHANNEL: " +(string)WEED_CHANNEL);
+        llSay(0,"ROLLEDUP_CHANNEL: " +(string)ROLLEDUP_CHANNEL);
         //////////////////DEBUG TOOL////////////////////////////
 
         avatarKey = llDetectedKey(0);
@@ -690,5 +690,4 @@ state s_active
     }
 
 }
-
 
